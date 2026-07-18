@@ -57,5 +57,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: sim-screenshot-${{ matrix.app }}
-          path: .cache/badge-2024-software/sim/screenshot.png
+          # the sim writes its screenshot as flow3r.png (flow3r badge heritage)
+          path: .cache/badge-2024-software/sim/flow3r.png
           if-no-files-found: ignore

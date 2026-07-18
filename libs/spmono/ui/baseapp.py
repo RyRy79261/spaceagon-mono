@@ -5,6 +5,12 @@ Subclasses implement on_update(delta) / on_draw(ctx) and may set ACTIONS to
 extend input bindings ("exit" -> CANCEL is always present).
 """
 
+# Import order matters: firmware's app -> system.eventbus -> system.scheduler
+# is circular unless system.scheduler loads first. On the badge it already has;
+# in the simulator's app-override mode (run.py <module>.<Class>) it has NOT,
+# and importing `app` first crashes (upstream bug, present in OS v2.1.1 —
+# even sim/apps/example fails). Priming scheduler makes the cycle resolve.
+import system.scheduler  # noqa: F401  (must precede `from app import App`)
 from app import App
 
 from .. import theme as _theme
