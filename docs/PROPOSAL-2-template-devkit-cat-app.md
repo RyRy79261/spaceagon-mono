@@ -56,9 +56,8 @@ Left running as an ambient desk/lanyard toy.
   sleep×1 → ≤8 frames/skin, comfortably under the 32-slot texture cache.
   Assets at `/apps/<dir>/assets/`, absolute paths (required), pre-warmed once at startup
   to avoid a first-draw hitch.
-- **Floor ring:** full-circle stroke, color = battery (below). Optional flagged mode:
-  also shorten the arc to show percent (partial arc from 12 o'clock,
-  `arc(0,0,114, -π/2, -π/2 + f·2π, 0)`).
+- **Floor ring:** full-circle stroke, **color-only** battery indication (decided —
+  no arc-length mode).
 - **Frame budget:** update/draw cap is 20 fps; tildenstein pushes 60+ vector rects + bezier
   spiders per frame, so ring + ball + 1–3 cat images is easy. When the ball settles and
   cats sleep, `update()` returns `False` → no redraws (scheduler skips rendering).
@@ -147,13 +146,12 @@ spaceagon-mono/
 │   ├── flags/                     # NEW: feature flags (below)
 │   ├── ui/  sensors/  util/
 ├── tools/                         # vendor.py, deploy.py, release.py, sim.py (wraps firmware sim)
-├── .github/workflows/             # ci.yml, release-app.yml
+├── .github/workflows/             # ci.yml
 ├── Justfile                       # dev entry points (just sim cat-yarn, just deploy cat-yarn, …)
 └── pyproject.toml                 # uv-managed; ruff, pytest, pyright + micropython-esp32-stubs
 ```
 
-### The "teeming engine" 🐈 (theming engine — assuming that was a typo; if you actually
-### want a *teeming* engine — many cats — that's the `MAX_CATS` flag below)
+### Theming engine (confirmed)
 
 - Firmware precedent: zero theming beyond `app_components/tokens.py`, whose `ui_colors`
   dict maps semantic names → rgb tuples **or callables** (gradients), consumed by
@@ -186,34 +184,28 @@ Two tiers, matching how the platform actually works:
 | lint | ruff check + format check (uv) | firmware pre-commit |
 | unit | pytest on CPython with **MicroPython stub conftest** (stub `machine`/`imu`/`settings`/`time.ticks_*`; hand-written `events.input` mini-impl) — tests physics, cat state machine, flags, theme | area/racecondition's proven approach |
 | sim-smoke | checkout firmware at pinned SHA, Python 3.10, symlink `apps/<x>` into `sim/apps/`, `SDL_VIDEODRIVER=dummy python run.py --screenshot <x>.App`, upload screenshot artifact | firmware sim.yml + BadgeBot |
-| manifest | validate every `tildagon.toml` against the store's **actual zod schema** (checkout badge-2024-app-store, `npm ci` in `packages/tildagon-app`, 10-line script) + docs limits (author ≤32, description ≤140) | the store isn't on npm but is trivially runnable |
+| manifest | lightweight `tildagon.toml` sanity check in Python (required fields, category enum, author ≤32 / description ≤140) — full store-schema validation only matters for store publishing, which is out of scope | docs publish.md limits |
 
-### Release pipeline (mirror repos — the store demands one repo per app)
+### Distribution (decided: NO mirror repos — this mono is the template codebase)
 
-Trigger: tag `catyarn/v1.00.02` (or manual dispatch) →
-
-1. `vendor.py`: flatten `apps/cat-yarn/` + its declared `libs/` into a store-shaped tree
-   (root `app.py`, `tildagon.toml`, no dev `metadata.json`), stamp `_build.py`.
-2. Push tree + tag to mirror repo `RyRy79261/spaceagon-catyarn` (fine-grained PAT scoped to
-   mirrors; `danharrin/monorepo-split-github-action` v2.4.5 or a plain scripted push).
-3. Idempotently ensure the **`tildagon-app` topic** on the mirror (`gh api PUT
-   /repos/…/topics`) — the store discovers by topic search.
-4. **Create the GitHub Release in the mirror** (`gh release create --repo …`) — a tag alone
-   is invisible to the store; it ingests only the latest release, live in ~10–15 min.
-
-**Version scheme (important):** the badge's update check is a lexicographic string compare
-(`0.9 → 0.10` breaks it). We use fixed-width zero-padded versions: **`1.00.00`,
-`1.00.01`, … `1.01.00`**.
+- Primary path: **sideload** — `just deploy <app>` runs `vendor.py` (flatten app + its
+  declared `libs/` + stamp `_build.py`) then `mpremote cp` to `/apps/<app>/` on the badge.
+- Apps stay **store-shaped** anyway (root-level `app.py` + `tildagon.toml` inside their
+  folder) — that costs nothing and keeps the door open: if an app ever warrants store
+  publishing, `vendor.py`'s output can be pushed to a standalone repo by hand (topic
+  `tildagon-app` + a release). No automation for that is in scope.
+- If we ever do publish manually: use fixed-width zero-padded versions (`1.00.00`) —
+  the badge's update check is a lexicographic string compare and breaks on `0.9 → 0.10`.
 
 ---
 
-## Decisions for you
+## Decision log
 
-1. **Cat & Yarn scope v1**: tilt ball + 1–2 cats + fright-jump + battery ring, with
-   petting/prox/multi-cat behind flags — good cut?
-2. **Ring semantics**: color-only (your brief), or color + arc-length as a flagged option?
-3. **Cat art**: pixel-art PNG frames (my rec) vs fully vector cats — vector means no asset
-   pipeline but stiffer animation. (Ball is vector either way.)
-4. **"Teeming engine"** — confirmed as *theming* engine? (Both are in scope regardless:
-   themes as above, `max_cats` flag for actual teeming.)
-5. **Mirror naming** `RyRy79261/spaceagon-<app>` and the `1.00.00` version scheme — OK?
+| Decision | Outcome |
+|---|---|
+| Template | GitHub template repository only — no in-repo scaffolding (owner, 2026-07-18) |
+| Theming engine | Confirmed (owner) |
+| Battery ring | **Color-only** (owner) |
+| Mirror-repo publishing | **Dropped** — this mono is the template codebase; sideload-first, apps stay store-shaped for optional manual publishing (owner) |
+| Cat art | Pixel-art PNG frames (default recommendation, not objected) |
+| v1 scope | Tilt ball + 1–2 cats + fright-jump + battery ring; petting/prox/multi-cat behind flags (default recommendation, not objected) |
