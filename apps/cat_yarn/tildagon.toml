@@ -1,0 +1,10 @@
+[app]
+name = "Cat & Yarn"
+category = "Apps"
+
+[metadata]
+author = "RyRy79261"
+license = "MIT"
+url = "https://github.com/RyRy79261/spaceagon-mono"
+description = "Ambient toy: cats chase a yarn ball that rolls with tilt. The rim shows battery."
+version = "1.00.00"

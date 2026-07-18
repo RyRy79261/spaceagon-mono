@@ -5,8 +5,37 @@ the hexagonal Tildagon badge), plus shared libraries — notably a generic input
 layer for assigning functionality to buttons/joystick/touch and composing apps from reusable
 parts.
 
-> **Status: research phase complete; awaiting architecture sign-off.**
-> Read [`docs/PROPOSAL.md`](docs/PROPOSAL.md) — that's the decision document.
+> **Status: scaffold + example app built.** This repo is intended to be used as a
+> GitHub **template repository** ("Use this template" → your own badge-app monorepo).
+
+## Quick start
+
+```sh
+uv run pytest -q                      # unit tests (physics, cat brain, input, theme, flags)
+uv run python tools/gen_cat_sprites.py  # regenerate sprite assets
+just sim cat_yarn                     # run in the official simulator (needs Python 3.10;
+                                      #   WASD = tilt, keys a-f = buttons)
+just deploy cat_yarn                  # sideload to a badge over USB (USB IN port),
+                                      #   then hold "reboop" ~2s to restart
+```
+
+## Layout
+
+```
+apps/cat_yarn/    Cat & Yarn — ambient toy: cats chase a tilt-driven yarn ball;
+                  the screen rim is a battery-level "floor" ring. Reference app.
+libs/spmono/      shared libs, vendored into each app by tools/vendor.py:
+                  engine (physics/sprites/state machines), input (action maps,
+                  edge/long-press detection), theme, flags, sensors, ui (BaseApp)
+tools/            vendor.py, deploy.py, sim.py, gen_cat_sprites.py, check_manifests.py
+tests/            CPython unit tests — no badge or simulator needed
+docs/             research + proposals (see table below)
+```
+
+Design constraints baked in: MicroPython 1.28 compatibility (no `match`, no
+dataclasses), one input vocabulary across 2024/2026 badges, apps stay
+store-shaped (root `app.py` + `tildagon.toml`) for optional manual publishing,
+and pure-logic modules import no firmware so they test on plain CPython.
 
 ## What is this badge?
 
