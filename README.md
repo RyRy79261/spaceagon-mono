@@ -23,7 +23,9 @@ parts.
 
 | Doc | Contents |
 |---|---|
-| [docs/PROPOSAL.md](docs/PROPOSAL.md) | **The proposed architecture & stack** (decision doc) |
+| [docs/PROPOSAL.md](docs/PROPOSAL.md) | Proposed architecture & stack (decision doc) |
+| [docs/PROPOSAL-2-template-devkit-cat-app.md](docs/PROPOSAL-2-template-devkit-cat-app.md) | **Template repo, dev kit, CI/CD, theming, flags + the Cat & Yarn example app** |
+| [docs/research/09-cat-app-feasibility.md](docs/research/09-cat-app-feasibility.md) | Feasibility research behind Proposal 2 |
 | [docs/research/01-hardware.md](docs/research/01-hardware.md) | The hardware, chip by chip |
 | [docs/research/02-app-model.md](docs/research/02-app-model.md) | How apps are written (App class, ctx, UI, eventbus) |
 | [docs/research/03-input.md](docs/research/03-input.md) | Buttons/joystick/touch — full input API |
