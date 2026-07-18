@@ -206,6 +206,6 @@ Two tiers, matching how the platform actually works:
 | Template | GitHub template repository only — no in-repo scaffolding (owner, 2026-07-18) |
 | Theming engine | Confirmed (owner) |
 | Battery ring | **Color-only** (owner) |
-| Mirror-repo publishing | **Dropped** — this mono is the template codebase; sideload-first, apps stay store-shaped for optional manual publishing (owner) |
+| Mirror-repo publishing | **Dropped** (owner, 2026-07-18) — then **amended** (owner, 2026-07-18): a `publish.yml` workflow flattens an app to its standalone store repo on manual dispatch (first publish) and auto-releases on `main` when the manifest version is bumped. Sideload remains the dev path. |
 | Cat art | Pixel-art PNG frames (default recommendation, not objected) |
 | v1 scope | Tilt ball + 1–2 cats + fright-jump + battery ring; petting/prox/multi-cat behind flags (default recommendation, not objected) |

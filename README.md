@@ -34,8 +34,32 @@ docs/             research + proposals (see table below)
 
 Design constraints baked in: MicroPython 1.28 compatibility (no `match`, no
 dataclasses), one input vocabulary across 2024/2026 badges, apps stay
-store-shaped (root `app.py` + `tildagon.toml`) for optional manual publishing,
+store-shaped (root `app.py` + `tildagon.toml`) so publishing is mechanical,
 and pure-logic modules import no firmware so they test on plain CPython.
+
+## Publishing to the Tildagon app store
+
+The store requires one repo per app (root `app.py` + `tildagon.toml`, the
+`tildagon-app` topic, and a GitHub Release). The **Publish apps** workflow
+handles that from this monorepo:
+
+1. **One-time per app:** create the empty target repo (default
+   `<owner>/spaceagon-<app-dashes>`, or set `[publish] repo = "owner/name"` in
+   the app's `tildagon.toml`), and add a `PUBLISH_TOKEN` repo secret — a
+   fine-grained PAT with *Contents: read/write* on the target repos (plus
+   *Administration: write* if you want the workflow to set the `tildagon-app`
+   topic; otherwise add the topic by hand once).
+2. **First publish:** Actions → *Publish apps to the Tildagon store* → Run
+   workflow → app name. It flattens the app (vendored libs, `DEBUG=False`,
+   dev `metadata.json` stripped, `[publish]` section removed, `metadata.url`
+   rewritten), force-pushes it to the target repo, ensures the topic, and
+   creates release `v<version>`. The store lists it within ~15 minutes
+   (failures: <https://apps.badge.emfcamp.org/errors/>).
+3. **Updates:** bump `version` in the app's `tildagon.toml` (keep components
+   fixed-width — `1.00.00 → 1.00.01`; the badge compares version strings
+   lexicographically) and merge to `main`. The workflow auto-releases every
+   already-published app whose version has no matching release. Apps never
+   published (no target repo / no release) are never auto-published.
 
 ## What is this badge?
 
