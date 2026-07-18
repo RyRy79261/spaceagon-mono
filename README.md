@@ -49,17 +49,16 @@ handles that from this monorepo:
    fine-grained PAT with *Contents: read/write* on the target repos (plus
    *Administration: write* if you want the workflow to set the `tildagon-app`
    topic; otherwise add the topic by hand once).
-2. **First publish:** Actions → *Publish apps to the Tildagon store* → Run
-   workflow → app name. It flattens the app (vendored libs, `DEBUG=False`,
-   dev `metadata.json` stripped, `[publish]` section removed, `metadata.url`
-   rewritten), force-pushes it to the target repo, ensures the topic, and
-   creates release `v<version>`. The store lists it within ~15 minutes
-   (failures: <https://apps.badge.emfcamp.org/errors/>).
+2. **Publishing (always manual):** Actions → *Publish apps to the Tildagon
+   store* → Run workflow → app name. It flattens the app (vendored libs,
+   `DEBUG=False`, dev `metadata.json` stripped, `[publish]` section removed,
+   `metadata.url` rewritten), force-pushes it to the target repo, ensures the
+   topic, and creates release `v<version>`. The store lists it within ~15
+   minutes (failures: <https://apps.badge.emfcamp.org/errors/>).
 3. **Updates:** bump `version` in the app's `tildagon.toml` (keep components
    fixed-width — `1.00.00 → 1.00.01`; the badge compares version strings
-   lexicographically) and merge to `main`. The workflow auto-releases every
-   already-published app whose version has no matching release. Apps never
-   published (no target repo / no release) are never auto-published.
+   lexicographically), then run the workflow again for that app. Nothing is
+   published automatically on merge.
 
 ## What is this badge?
 
