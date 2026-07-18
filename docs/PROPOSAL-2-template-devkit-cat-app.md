@@ -124,14 +124,14 @@ touch-pad chatter characteristics · multi-hour GC/heap stability.
 
 ## Part B — Template repo + dev kit + pipelines
 
-### Repo becomes a GitHub **template repository**, plus an internal app generator
+### Repo becomes a GitHub **template repository** — nothing more
 
-- GitHub's "Use this template" gives one-click bootstrap of the whole monorepo (copies
-  files, not history/settings/topics — fine).
-- For "add an app to *this* monorepo": a **Copier** template at `templates/app/`
-  (`just new-app name=…` → `copier copy templates/app apps/<name>`). Copier is the
-  2026-current choice (typed prompts, `copier update` re-applies template evolution to
-  generated apps). Cookiecutter/cruft only if you object.
+Per clarification: "template" means the GitHub feature only — the repo is marked as a
+template so "Use this template" spins up a new repo from it (copies files as a single
+squashed commit; does NOT copy settings/secrets/topics/history — the README documents the
+two or three one-time setup steps a fresh copy needs, e.g. the mirror-publish PAT secret).
+No in-codebase scaffolding machinery. Adding an app *inside* the monorepo is just copying
+`apps/_example/` (the Cat & Yarn app doubles as the reference layout).
 
 ### Layout (delta from Proposal 1)
 
@@ -146,7 +146,6 @@ spaceagon-mono/
 │   ├── theme/                     # NEW: theming engine (below)
 │   ├── flags/                     # NEW: feature flags (below)
 │   ├── ui/  sensors/  util/
-├── templates/app/                 # Copier template for new apps
 ├── tools/                         # vendor.py, deploy.py, release.py, sim.py (wraps firmware sim)
 ├── .github/workflows/             # ci.yml, release-app.yml
 ├── Justfile                       # dev entry points (just sim cat-yarn, just deploy cat-yarn, …)
@@ -218,4 +217,3 @@ Trigger: tag `catyarn/v1.00.02` (or manual dispatch) →
 4. **"Teeming engine"** — confirmed as *theming* engine? (Both are in scope regardless:
    themes as above, `max_cats` flag for actual teeming.)
 5. **Mirror naming** `RyRy79261/spaceagon-<app>` and the `1.00.00` version scheme — OK?
-6. **Copier** for the app generator (vs cookiecutter)?
